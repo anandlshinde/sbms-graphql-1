@@ -1,0 +1,151 @@
+hexagonal architecture microservices spring boot
+=====================================================
+
+https://jivimberg.io/blog/2020/02/01/hexagonal-architecture-on-spring-boot/
+
+https://medium.com/javarevisited/hands-on-hexagonal-architecture-with-spring-boot-ca61f88bed8b
+GrapthQL
+==========
+
+GrapthQL is a query language for API not a tool or any framework for designing API
+A Client gets exactly what it wants from an API nothing more than that
+
+
+
+GrapthQL is collection of three things
+1) Schema Definition language or SDL
+2) Runtime Environment
+3) Query Language
+
+
+1) Schema Definition language or SDL
+
+A GrapthQL schema contains : 
+	Types which is similar to classes in Java.
+	Operations which can be performed on these Types. Similar to method in Java.
+
+
+type:
+
+1) Query : it is used for reading data from server. [read only data]
+
+2) Mutation: It is used for writing data on server .  [write operations only like insert/update]
+
+
+2) Runtime Environment
+
+	Runtime Environment performed two major operations
+	
+	1) Parsing the GrapthQL schema file and creating an in memory schema form it.
+		Reading information from schema again and again is a inefficient, so runtime environment 
+		create a in memory representation of schema file that contains all the information defined 
+		in that schema file.
+	
+	2) executing the operation specified in the client's request
+		runtime environment handling the user's requests. it looks any operation specified in that request then it
+		uses the in memory schema and it check the that operation is exists in schema or not. if exists then runtime will execute 
+		it and will perform the specified action like reading or manipulating the data at server.
+		
+		
+		
+3) Query Language
+	
+		Query language is used by clients to use operations that are defined in GrapthQL schema.
+		
+		Query language enable a client to select only required fields from set of fields.
+		
+example:
+{
+	getBooks{
+		name
+	}
+
+}
+
+Data Fetcher:
+
+	Data Fetcher is call back function.
+	
+	It is linked to every query, mutation and field.
+	
+	When client uses  an operation defined in the schema file then runtime environment invoke the 
+	data fetcher linked to that operation in order to perform the specified action.
+
+e.g:
+
+	public DataFetcher<Book> getBook(){
+		return environment -> bookReposiotry.findById(environment.getArgument("id")).map(Function.identity()).orElse(null);
+	}
+	
+
+Testing Tool [chrome extension]: Altair GrapthQL Client 
+	
+	
+	mutation {
+  createAuthor(name: "Pravin", age: 35) 
+  {
+    id
+  }
+}
+
+mutation {
+  createTutorial(title: "SBMS-JPA", description: "SBMS-JPA Tutorials", author: "1") 
+  {
+    id
+  }
+}
+	
+	{
+  findAllTutorials{
+    id
+    title
+    description
+    author{
+      id
+      name
+    }
+  }
+}
+
+mutation{
+  updateTutorial(id: 3,title: "SBMS-JPQL-Basics", description: "SBMS-JPQL-Basics Tutorials"){
+    id
+  }
+
+  mutation{
+  deleteTutorial(id: 4)
+}
+
+{
+  findAllAuthors{
+    id
+    name
+  }
+}
+
+{
+  findByName(name: "Anand"){
+    id
+    name
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+==========================================================================================
+REF:
+
+https://dzone.com/articles/a-beginners-guide-to-graphql-with-spring-boot
+
+https://medium.com/swlh/how-to-write-a-simple-graphql-application-using-spring-boot-in-java-a8232a0decd5
+
+https://www.bezkoder.com/spring-boot-graphql-mysql-jpa/#Implement_GraphQL_Root_Query_Resolver
